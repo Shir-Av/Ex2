@@ -12,9 +12,22 @@ public class DGraph implements graph{
 
 	public DGraph()
 	{
-		HashMap<Integer,node_data> nodes = new HashMap<Integer,node_data>();
-		HashMap<Integer,HashMap<Integer,edge_data>> graph = new HashMap<Integer,HashMap<Integer,edge_data>>();
+		this.nodes = new HashMap<Integer,node_data>();
+		this.graph = new HashMap<Integer,HashMap<Integer,edge_data>>();
+		this.MC=0;
+		this.EDGE_SIZE=0;
 	}
+
+	/*public DGraph(Collection<node_data> nodes, Collection<edge_data> edges) {
+		this.nodes = new HashMap<Integer, node_data>();
+		this.graph = new HashMap<Integer, HashMap<Integer, edge_data>>();
+		for(node_data n : nodes)
+			addNode(n);
+		for(edge_data e : edges)
+			connect(e.getSrc(), e.getDest(), e.getWeight());
+		MC = 0;
+		EDGE_SIZE = edges.size();
+	}*/
 
 	@Override
 	public node_data getNode(int key)
@@ -39,8 +52,8 @@ public class DGraph implements graph{
 	@Override
 	public void addNode(node_data n)
 	{
-
 		nodes.put(n.getKey(), n);
+		//graph.put(n.getKey(), new HashMap<Integer, edge_data>());
 		NODE_SIZE++;
 		MC++;
 		
@@ -55,16 +68,17 @@ public class DGraph implements graph{
 			return;
 		}
 		EdgeData e = new EdgeData((NodeData) nodes.get(src), (NodeData) nodes.get(dest), w);
-		HashMap<Integer,edge_data> temp = graph.get(src);
-		if(temp.values().isEmpty())
+		HashMap<Integer,edge_data> temp = this.graph.get(src);
+		if(temp == null)
 		{
-			//HashMap<Integer,edge_data> temp = new HashMap<Integer,edge_data>();
+			temp = new HashMap<Integer, edge_data>();
 			temp.put(dest, e);
 			graph.put(src, temp);
 		}
 		else
 		{
-			graph.get(src).put(dest, e);
+			temp.put(dest, e);
+			graph.put(src, temp);
 		}
 		EDGE_SIZE++;
 		MC++;
@@ -80,17 +94,18 @@ public class DGraph implements graph{
 	@Override
 	public Collection<edge_data> getE(int node_id)
 	{
+		HashMap<Integer, edge_data> srcEdges = this.graph.get(node_id);
 		if(nodes.get(node_id) == null)
 		{
 			System.out.println("ERROR: this node does not exist");
 			return null;
 		}
-		else if (this.graph.get(node_id).values().isEmpty())
+		else if (srcEdges == null)
 		{
 			System.out.println("ERROR: there are no edges getting out of this given node");
 			return null;
 		}
-		else return this.graph.get(node_id).values();
+		else return graph.get(node_id).values();
 	}
 
 	@Override
