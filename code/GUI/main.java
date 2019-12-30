@@ -33,11 +33,11 @@ public class main {
         graph g = new DGraph();
         NodeData n1 = new NodeData(1, new Point3D(3,6, 0));
         g.addNode(n1);
-        g.addNode(new NodeData(2, new Point3D(50, 10)));
-        g.addNode(new NodeData(3, new Point3D(90, -20)));
-        g.addNode(new NodeData(4, new Point3D(45, 50)));
-        g.addNode(new NodeData(5, new Point3D(20, -10)));
-        g.addNode(new NodeData(6, new Point3D(30, 60)));
+        g.addNode(new NodeData(2, new Point3D(1000, 1000)));
+        g.addNode(new NodeData(3, new Point3D(900, -200)));
+        g.addNode(new NodeData(4, new Point3D(405, 500)));
+        g.addNode(new NodeData(5, new Point3D(200, -100)));
+        g.addNode(new NodeData(6, new Point3D(300, 600)));
         /*g.connect(1,2,7);
         g.connect(2,3,2);
         g.connect(3,4,1);
@@ -48,7 +48,7 @@ public class main {
         for (node_data node1 : s) {
             for (node_data node2 : s) {
                 if (node1.getKey() != node2.getKey())
-                    g.connect(node1.getKey(), node2.getKey(), Double.MAX_VALUE);
+                    g.connect(node1.getKey(), node2.getKey(), 0);
             }
         }
         Graph_GUI app = new Graph_GUI(g);

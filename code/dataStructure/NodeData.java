@@ -37,7 +37,7 @@ public class NodeData implements node_data {
     }
     public NodeData(int key, Point3D p) {
         this.key = key;
-        this.nWeight = 0;
+        this.nWeight = Double.MAX_VALUE;
         this.location = p;
         this.info = "";
         this.tag = Color.BLACK;
