@@ -9,7 +9,7 @@ public class NodeData implements node_data {
     private Point3D location;
     private double nWeight;
     private String info;
-    private Color tag;
+    private int tag;
 
     public NodeData ()
     {
@@ -17,7 +17,7 @@ public class NodeData implements node_data {
         this.location = Point3D.ORIGIN;
         this.nWeight = Integer.MAX_VALUE;
         this.info = null;
-        this.tag = Color.BLACK;
+        this.tag = 0;
     }
     public NodeData (NodeData n)
     {
@@ -33,14 +33,14 @@ public class NodeData implements node_data {
         this.location = location;
         this.nWeight = weight;
         this.info = info;
-        this.tag = Color.BLACK;
+        this.tag = 0;
     }
     public NodeData(int key, Point3D p) {
         this.key = key;
         this.nWeight = Double.MAX_VALUE;
         this.location = p;
         this.info = "";
-        this.tag = Color.BLACK;
+        this.tag = 0;
     }
 
     @Override
@@ -89,13 +89,13 @@ public class NodeData implements node_data {
     @Override
     public int getTag()
     {
-        return this.tag.getRGB();
+        return this.tag;
     }
 
     @Override
     public void setTag(int t)
     {
-        this.tag = new Color(t);
+        this.tag = t;
     }
     public String toString()
     {
