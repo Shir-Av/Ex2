@@ -177,8 +177,17 @@ public class Graph_Algo implements graph_algorithms {
 
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
-		// TODO Auto-generated method stub
-		return null;
+		shortestPathDist(src, dest);
+		List<node_data> path = new LinkedList<node_data>();
+
+		node_data nodeDest = this.graph_algo.getNode(dest);
+		while (nodeDest.getKey() != src)
+		{
+			path.add(nodeDest);
+			nodeDest = this.graph_algo.getNode(Integer.parseInt(nodeDest.getInfo()));
+		}
+		path.add(this.graph_algo.getNode(src));
+		return path;
 	}
 
 	@Override
@@ -241,7 +250,8 @@ public class Graph_Algo implements graph_algorithms {
 		g1.connect(4, 3, 2);
 
 		ga1.init(g1);
-		System.out.println(ga1.shortestPathDist(0,3));
+		System.out.println(ga1.shortestPathDist(0,2));
+		System.out.println(ga1.shortestPath(0,2));
 
 
 
