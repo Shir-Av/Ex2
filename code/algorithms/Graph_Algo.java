@@ -71,12 +71,11 @@ public class Graph_Algo implements graph_algorithms {
 
 	@Override
 	public boolean isConnected() {
-		//int numNodes = this.graph_algo.nodeSize();
 		if (this.hasEdges()) {
 			for (node_data n : this.graph_algo.getV()) {
 				this.initTag();
 				int src = n.getKey();
-				Collection<Integer> newCol = new ArrayList<Integer>();
+				ArrayList<Integer> newCol = new ArrayList<Integer>();
 				if (!hasAllPaths(src, newCol)) {
 					return false;
 				}
@@ -95,7 +94,6 @@ public class Graph_Algo implements graph_algorithms {
 		for (node_data n : this.graph_algo.getV()) {
 			int i = n.getKey();
 			Collection<edge_data> temp = this.graph_algo.getE(i);
-			n.setTag(0);
 			if (temp == null) {
 				return false;
 			}
@@ -103,42 +101,32 @@ public class Graph_Algo implements graph_algorithms {
 		return true;
 	}
 
-	private boolean hasAllPaths(int src, Collection<Integer> newCol) {
-		boolean flag = false;
+	private boolean hasAllPaths(int src, ArrayList<Integer> newCol) {
 		Collection<edge_data> temp = this.graph_algo.getE(src);
 		this.graph_algo.getNode(src).setTag(1);
 		if (!newCol.contains(src)) {
 			newCol.add(src);
 		}
 
-		if (newCol.size() == this.graph_algo.nodeSize())
-		{
-			flag = true;
+		if (newCol.size() == this.graph_algo.nodeSize()){
+			return true;
 		}
-		else
+		for (edge_data e : temp)
+		{
+			node_data d = this.graph_algo.getNode(e.getDest());
+			if (!newCol.contains(d.getKey()))
 			{
-			for (edge_data e : temp)
-			{
-				node_data d = this.graph_algo.getNode(e.getDest());
-				if (!newCol.contains(d.getKey()))
-				{
-					newCol.add(d.getKey());
-				}
-			}
-			for (edge_data e : temp)
-			{
-				node_data d = this.graph_algo.getNode(e.getDest());
-				if (d.getTag() == 0)
-				{
-					hasAllPaths(d.getKey(), newCol);
-				}
+				newCol.add(d.getKey());
 			}
 		}
-		if (newCol.size() == this.graph_algo.nodeSize())
-		{
-			flag = true;
+		for (int i=0 ; i<newCol.size() ; i++){
+			node_data d = this.graph_algo.getNode(newCol.get(i));
+			if (d.getTag() == 0)
+			{
+				return hasAllPaths(d.getKey(), newCol);
+			}
 		}
-		return flag;
+		return false;
 	}
 
 	@Override
