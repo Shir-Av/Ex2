@@ -1,27 +1,26 @@
 package algorithms;
 
 import java.io.*;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
-import dataStructure.DGraph;
-import dataStructure.NodeData;
-import dataStructure.graph;
-import dataStructure.node_data;
+import GUI.Graph_GUI;
+import dataStructure.*;
+import utils.Point3D;
+
 /**
  * This empty class represents the set of graph-theory algorithms
  * which should be implemented as part of Ex2 - Do edit this class.
  * @author
  *
  */
-public class Graph_Algo implements graph_algorithms{
+public class Graph_Algo implements graph_algorithms {
 	public graph graph_algo;
 
 	public Graph_Algo() {
 		this.graph_algo = new DGraph();
 	}
-	public Graph_Algo(graph graph_algo)
-	{
+
+	public Graph_Algo(graph graph_algo) {
 		this.graph_algo = graph_algo;
 	}
 
@@ -32,61 +31,114 @@ public class Graph_Algo implements graph_algorithms{
 	}
 
 	@Override
-	public void init(String file_name)
-	{
-		try
-		{
+	public void init(String file_name) {
+		try {
 			FileInputStream file = new FileInputStream(file_name);
 			ObjectInputStream in = new ObjectInputStream(file);
 
-			graph_algo = (graph)in.readObject();
+			this.graph_algo = (graph) in.readObject();
 
 			in.close();
 			file.close();
 
 			System.out.println("Object has been deserialized");
 
-		}
-
-		catch(IOException ex)
-		{
+		} catch (IOException ex) {
 			System.out.println("IOException is caught");
-		}
-
-		catch(ClassNotFoundException ex)
-		{
+		} catch (ClassNotFoundException ex) {
 			System.out.println("ClassNotFoundException is caught");
 		}
-
 
 	}
 
 	@Override
 	public void save(String file_name) {
-		try
-		{
+		try {
 			FileOutputStream file = new FileOutputStream(file_name);
 			ObjectOutputStream out = new ObjectOutputStream(file);
 
-			out.writeObject(graph_algo);
+			out.writeObject(this.graph_algo);
 
 			out.close();
 			file.close();
 
 			System.out.println("Object has been serialized");
-		}
-		catch(IOException ex)
-		{
+		} catch (IOException ex) {
 			System.out.println("IOException is caught");
 		}
-
 
 	}
 
 	@Override
 	public boolean isConnected() {
+		//int numNodes = this.graph_algo.nodeSize();
+		if (this.hasEdges()) {
+			for (node_data n : this.graph_algo.getV()) {
+				this.initTag();
+				int src = n.getKey();
+				Collection<Integer> newCol = new ArrayList<Integer>();
+				if (!hasAllPaths(src, newCol)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
-		return false;
+	private void initTag() {
+		for (node_data n : this.graph_algo.getV()) {
+			n.setTag(0);
+		}
+	}
+
+	private boolean hasEdges() {
+		for (node_data n : this.graph_algo.getV()) {
+			int i = n.getKey();
+			Collection<edge_data> temp = this.graph_algo.getE(i);
+			n.setTag(0);
+			if (temp == null) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean hasAllPaths(int src, Collection<Integer> newCol) {
+		boolean flag = false;
+		Collection<edge_data> temp = this.graph_algo.getE(src);
+		this.graph_algo.getNode(src).setTag(1);
+		if (!newCol.contains(src)) {
+			newCol.add(src);
+		}
+
+		if (newCol.size() == this.graph_algo.nodeSize())
+		{
+			flag = true;
+		}
+		else
+			{
+			for (edge_data e : temp)
+			{
+				node_data d = this.graph_algo.getNode(e.getDest());
+				if (!newCol.contains(d.getKey()))
+				{
+					newCol.add(d.getKey());
+				}
+			}
+			for (edge_data e : temp)
+			{
+				node_data d = this.graph_algo.getNode(e.getDest());
+				if (d.getTag() == 0)
+				{
+					hasAllPaths(d.getKey(), newCol);
+				}
+			}
+		}
+		if (newCol.size() == this.graph_algo.nodeSize())
+		{
+			flag = true;
+		}
+		return flag;
 	}
 
 	@Override
@@ -113,4 +165,33 @@ public class Graph_Algo implements graph_algorithms{
 		return null;
 	}
 
+	public static void main(String[] args) {
+
+
+		graph g = new DGraph();
+		graph_algorithms ga = new Graph_Algo();
+		NodeData n1 = new NodeData(1, new Point3D(3, 6, 0));
+		g.addNode(n1);
+		g.addNode(new NodeData(2, new Point3D(1000, 1000)));
+		g.addNode(new NodeData(3, new Point3D(900, -200)));
+		g.addNode(new NodeData(4, new Point3D(405, 500)));
+		g.addNode(new NodeData(5, new Point3D(200, -100)));
+		g.addNode(new NodeData(6, new Point3D(300, 600)));
+		g.connect(1, 2, 7);
+		g.connect(1, 5, 7);
+		g.connect(2, 1, 2);
+		g.connect(2, 4, 2);
+		g.connect(3, 4, 1);
+		g.connect(3, 2, 1);
+		g.connect(4, 3, 3);
+		g.connect(5, 1, 1);
+		g.connect(5, 2, 4);
+		g.connect(5, 6, 4);
+		g.connect(6, 1, 4);
+		ga.init(g);
+		System.out.println(ga.isConnected());
+
+
+
+	}
 }
