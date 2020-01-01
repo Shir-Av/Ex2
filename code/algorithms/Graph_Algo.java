@@ -130,9 +130,49 @@ public class Graph_Algo implements graph_algorithms {
 	}
 
 	@Override
-	public double shortestPathDist(int src, int dest) {
-		// TODO Auto-generated method stub
-		return 0;
+	public double shortestPathDist(int src, int dest)
+	{
+		this.initTag(); //set all tags to 0
+		double weight;
+		node_data srcNode = this.graph_algo.getNode(src);
+		node_data destNode = this.graph_algo.getNode(dest);
+		srcNode.setWeight(0);
+
+		while (srcNode.getKey() != destNode.getKey() && srcNode.getTag() == 0)
+		{
+			Collection <edge_data> edges = this.graph_algo.getE(srcNode.getKey());
+			if(!edges.isEmpty())
+			{
+				for (edge_data e: edges)
+				{
+					node_data tmpDest = this.graph_algo.getNode(e.getDest());
+					weight = srcNode.getWeight() + e.getWeight();
+					if(weight < tmpDest.getWeight() && tmpDest.getTag() == 0)
+					{
+						tmpDest.setInfo("" + srcNode.getKey());
+						tmpDest.setWeight(weight);
+					}
+				}
+			}
+			srcNode.setTag(1);
+			srcNode = minWeight();
+
+		}
+		return srcNode.getWeight();
+	}
+
+	private node_data minWeight () // returns the node with the min weight and tag 0 in the collection
+	{
+		Collection <node_data> node = this.graph_algo.getV();
+		node_data tmpN = new NodeData();
+		for(node_data n: node)
+		{
+			if (n.getTag() == 0 && n.getWeight() < tmpN.getWeight())
+			{
+				tmpN = n;
+			}
+		}
+		return tmpN;
 	}
 
 	@Override
@@ -155,7 +195,7 @@ public class Graph_Algo implements graph_algorithms {
 
 	public static void main(String[] args) {
 
-
+		//is conected
 		graph g = new DGraph();
 		graph_algorithms ga = new Graph_Algo();
 		NodeData n1 = new NodeData(1, new Point3D(3, 6, 0));
@@ -178,6 +218,32 @@ public class Graph_Algo implements graph_algorithms {
 		g.connect(6, 1, 4);
 		ga.init(g);
 		System.out.println(ga.isConnected());
+
+		//shortest path
+
+		graph g1 = new DGraph();
+		graph_algorithms ga1 = new Graph_Algo();
+
+		g1.addNode(new NodeData(0, new Point3D(1000, 1000)));
+		g1.addNode(new NodeData(1, new Point3D(900, -200)));
+		g1.addNode(new NodeData(2, new Point3D(405, 500)));
+		g1.addNode(new NodeData(3, new Point3D(200, -100)));
+		g1.addNode(new NodeData(4, new Point3D(300, 600)));
+		g1.connect(0, 1, 10);
+		g1.connect(0, 4, 5);
+		g1.connect(1, 4, 2);
+		g1.connect(1, 2, 1);
+		g1.connect(2, 3, 4);
+		g1.connect(3, 0, 7);
+		g1.connect(3, 2, 6);
+		g1.connect(4, 1, 3);
+		g1.connect(4, 2, 9);
+		g1.connect(4, 3, 2);
+
+		ga1.init(g1);
+		System.out.println(ga1.shortestPathDist(0,3));
+
+
 
 
 
