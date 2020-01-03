@@ -60,6 +60,7 @@ public class NodeData implements node_data {
     {
         Point3D p1 = new Point3D(p);
         this.location = p1;
+
     }
 
     @Override
@@ -99,7 +100,7 @@ public class NodeData implements node_data {
     }
     public String toString()
     {
-        String s = "Id: "+ this.key +" , Location: "+ this.location + " , Weight: "+ this.nWeight + " , Info: "+ this.info + " , Tag: "+ this.tag;
+        String s = "(Id: "+ this.key +" , Location: "+ this.location + ", Weight: "+ this.nWeight + ", Info: "+ this.info + ", Tag: "+ this.tag+")\n";
         return s;
     }
 }
