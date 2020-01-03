@@ -80,8 +80,9 @@ public class Graph_Algo implements graph_algorithms {
 					return false;
 				}
 			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	private void initTag() {
@@ -165,6 +166,10 @@ public class Graph_Algo implements graph_algorithms {
 		g.addNode(new NodeData(4, new Point3D(405, 500)));
 		g.addNode(new NodeData(5, new Point3D(200, -100)));
 		g.addNode(new NodeData(6, new Point3D(300, 600)));
+
+		g.connect(6,4,9);
+		g.connect(6,5,2);
+
 		g.connect(1, 2, 7);
 		g.connect(1, 5, 7);
 		g.connect(2, 1, 2);
