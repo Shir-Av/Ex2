@@ -9,10 +9,6 @@ public class DGraph implements graph{
 	private static int MC = 0;
 	private static int NODE_SIZE = 0;
 	private static int EDGE_SIZE = 0;
-	public static double min_x;
-	public static double max_x;
-	public static double min_y;
-	public static double max_y;
 
 	public DGraph()
 	{
@@ -60,23 +56,6 @@ public class DGraph implements graph{
 		//graph.put(n.getKey(), new HashMap<Integer, edge_data>());
 		NODE_SIZE++;
 		MC++;
-		if(n.getLocation().x() < min_x)
-		{
-			min_x = n.getLocation().x();
-		}
-		if(n.getLocation().x() > max_x)
-		{
-			max_x = n.getLocation().x();
-		}
-		if(n.getLocation().y() < min_y)
-		{
-			min_y = n.getLocation().y();
-		}
-		if(n.getLocation().y() > max_y)
-		{
-			max_y = n.getLocation().y();
-		}
-		
 	}
 
 	@Override
