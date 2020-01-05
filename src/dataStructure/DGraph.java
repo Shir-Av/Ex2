@@ -1,9 +1,10 @@
 package dataStructure;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 
-public class DGraph implements graph{
+public class DGraph implements graph, Serializable {
 	public HashMap<Integer,node_data> nodes;
 	public HashMap<Integer,HashMap<Integer,edge_data>> graph;
 	private static int MC = 0;
@@ -14,20 +15,11 @@ public class DGraph implements graph{
 	{
 		this.nodes = new HashMap<Integer,node_data>();
 		this.graph = new HashMap<Integer,HashMap<Integer,edge_data>>();
+		this.NODE_SIZE = 0;
 		this.MC=0;
 		this.EDGE_SIZE=0;
-	}
 
-	/*public DGraph(Collection<node_data> nodes, Collection<edge_data> edges) {
-		this.nodes = new HashMap<Integer, node_data>();
-		this.graph = new HashMap<Integer, HashMap<Integer, edge_data>>();
-		for(node_data n : nodes)
-			addNode(n);
-		for(edge_data e : edges)
-			connect(e.getSrc(), e.getDest(), e.getWeight());
-		MC = 0;
-		EDGE_SIZE = edges.size();
-	}*/
+	}
 
 	@Override
 	public node_data getNode(int key)
@@ -52,10 +44,12 @@ public class DGraph implements graph{
 	@Override
 	public void addNode(node_data n)
 	{
-		nodes.put(n.getKey(), n);
-		//graph.put(n.getKey(), new HashMap<Integer, edge_data>());
-		NODE_SIZE++;
-		MC++;
+		if (!this.nodes.containsKey(n.getKey())) {
+			nodes.put(n.getKey(), n);
+			NODE_SIZE++;
+			MC++;
+		}
+		else System.out.println("ERROR: this key node already exist");
 	}
 
 	@Override
@@ -117,12 +111,14 @@ public class DGraph implements graph{
 		}
 		else
 		{
-			if(!this.graph.get(key).values().isEmpty()){
+			if(!this.graph.get(key).values().isEmpty())
+			{
 				EDGE_SIZE -= this.graph.get(key).values().size();
 				graph.remove(key);
 
 			}
-			for (HashMap<Integer,edge_data> temp: this.graph.values()) {
+			for (HashMap<Integer,edge_data> temp: this.graph.values())
+			{
 				if(temp.containsKey(key))
 				{
 					temp.remove(key);

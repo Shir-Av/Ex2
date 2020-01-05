@@ -3,22 +3,15 @@ package dataStructure;
 import utils.Point3D;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class NodeData implements node_data {
+public class NodeData implements node_data, Serializable {
     private int key;
     private Point3D location;
     private double nWeight;
     private String info;
     private int tag;
 
-    public NodeData ()
-    {
-        this.key = 0;
-        this.location = Point3D.ORIGIN;
-        this.nWeight = Integer.MAX_VALUE;
-        this.info = null;
-        this.tag = 0;
-    }
     public NodeData (int key)
     {
         this.key = key;
@@ -43,7 +36,8 @@ public class NodeData implements node_data {
         this.info = info;
         this.tag = 0;
     }
-    public NodeData(int key, Point3D p) {
+    public NodeData(int key, Point3D p)
+    {
         this.key = key;
         this.nWeight = Double.MAX_VALUE;
         this.location = p;
@@ -108,7 +102,7 @@ public class NodeData implements node_data {
     }
     public String toString()
     {
-        String s = "(Id: "+ this.key +" , Location: "+ this.location + ", Weight: "+ this.nWeight + ", Info: "+ this.info + ", Tag: "+ this.tag+")\n";
+        String s = "Id: "+ this.key ;
         return s;
     }
 }
