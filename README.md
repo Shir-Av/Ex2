@@ -29,6 +29,7 @@ The Main purpose of this project is to Create directed weighted graph, Display t
 
 in addition it is available to save and load a graph to and from a file.
 
+<img width="741" alt="graph" src="https://user-images.githubusercontent.com/58072903/71782444-8fce5580-2fe2-11ea-86f2-87808ddd8b94.png">
 
 
 
