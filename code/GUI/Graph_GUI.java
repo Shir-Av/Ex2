@@ -2,10 +2,7 @@ package GUI;
 
 import algorithms.Graph_Algo;
 import algorithms.graph_algorithms;
-import dataStructure.DGraph;
-import dataStructure.edge_data;
-import dataStructure.graph;
-import dataStructure.node_data;
+import dataStructure.*;
 import utils.Point3D;
 
 import javax.swing.*;
@@ -15,14 +12,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.FilenameFilter;
+import java.io.*;
+import java.util.LinkedList;
 import java.util.List;
 
 
-public class Graph_GUI  extends JFrame implements ActionListener, MouseListener, graph_algorithms {
+public class Graph_GUI  extends JFrame implements ActionListener, MouseListener{
     public graph g1;
-    private Graph_Algo graphAlgo;
+    private graph_algorithms graphAlgo;
 
     public Graph_GUI()
     {
@@ -35,7 +32,7 @@ public class Graph_GUI  extends JFrame implements ActionListener, MouseListener,
     }
 
     public void initGraph(graph g) {
-       JFrame frame = new JFrame();
+        JFrame frame = new JFrame();
         this.setTitle("my_graph");
         this.setMenuBar(createMenuBar());
         this.setSize(1500, 900);
@@ -51,85 +48,123 @@ public class Graph_GUI  extends JFrame implements ActionListener, MouseListener,
         Menu File = new Menu("File");
         File.addActionListener(this);
         MenuBar.add(File);
+        Menu Algorithms = new Menu("Algorithms");
+        Algorithms.addActionListener(this);
+        MenuBar.add(Algorithms);
         MenuItem Load = new MenuItem("Load");
         Load.addActionListener(this);
         File.add(Load);
         MenuItem Save = new MenuItem("Save");
         Save.addActionListener(this);
         File.add(Save);
-        MenuItem init = new MenuItem("init");
-        init.addActionListener(this);
-        File.add(init);
+        MenuItem initFile = new MenuItem("inittoFile");
+        initFile.addActionListener(this);
+        Algorithms.add(initFile);
         MenuItem isConnected = new MenuItem("isConnected");
         isConnected.addActionListener(this);
-        File.add(isConnected);
+        Algorithms.add(isConnected);
+        MenuItem shortestPathDist = new MenuItem("shortestPathDist");
+        isConnected.addActionListener(this);
+        Algorithms.add(shortestPathDist);
+        MenuItem shortestPath = new MenuItem("shortestPath");
+        isConnected.addActionListener(this);
+        Algorithms.add(shortestPath);
+        MenuItem TSP = new MenuItem("TSP");
+        isConnected.addActionListener(this);
+        Algorithms.add(TSP);
         this.addMouseListener(this);
         return MenuBar;
+    }
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+        String str = e.getActionCommand();
+        if (str.equals("Save")) save();
+        else if(str.equals("Load")) Load();
+        else  if (str.equals("init")) init();
+        else if (str.equals("isConnected")) isConnected();
+        else if (str.equals("shortestPathDist")) shortestPathDist();
+        else if (str.equals("shortestPath")) shortestPathList();
+        else if (str.equals("TSP")) TSP();
     }
 
     public void paint(Graphics g) {
         super.paint(g);
         this.Draw(g);
     }
-
+//works - need to fix print of (weight, info, key, yellow mark)
     public void Draw(Graphics g) {
-         Graphics2D g1 = (Graphics2D) g;
-         Point3D minP = minPoint();
-         Point3D maxP = maxPoint();
+        Graphics2D g1 = (Graphics2D) g;
+        Point3D minP = minPoint();
+        Point3D maxp = maxPoint();
         for (node_data n : this.g1.getV()) // This method return a pointer (shallow copy) for the  collection representing all the nodes in the graph
         {
-            Point3D currNodeScaledData = ScaleToFrame(n.getLocation(),minP,maxP);
+            Point3D currNodeScaledData = ScaleToFrame(n.getLocation(),minP,maxp);
 
             g.setColor(Color.RED);
-            g.fillOval(currNodeScaledData.ix(), currNodeScaledData.iy(), 20, 20); //draw a point in the x,y location
+            g.fillOval(currNodeScaledData.ix(), currNodeScaledData.iy(), 15, 15); //draw a point in the x,y location
             String keyName = "";
             keyName += n.getKey(); //sets a string with the key of each point
-            g.setFont(new Font("deafult", Font.BOLD, 14));
-            g.drawString(keyName, currNodeScaledData.ix(),currNodeScaledData.iy());
+            g.setColor(Color.BLUE);
+            g.setFont(new Font("deafult", Font.BOLD, 20));
+            g.drawString(keyName, currNodeScaledData.ix()-5,currNodeScaledData.iy()-5);
             String tagInfoWeight = "";
-            tagInfoWeight += ("(tag: " + n.getTag() +",info: " + n.getInfo() + ",weight: " + n.getWeight()+ ")");
-            g.drawString(tagInfoWeight, currNodeScaledData.ix(), currNodeScaledData.iy());
+            tagInfoWeight += ("(tag: " + n.getTag() +" \n"+ "info: " + n.getInfo() + "\n"+" weight: " + n.getWeight()+ ")");
+            String loc = "";
+            loc += n.getLocation();
+            g.setColor(Color.BLACK);
+            g.setFont(new Font("deafult", Font.BOLD, 14));
+            g.drawString(tagInfoWeight+"\n", currNodeScaledData.ix() +25, currNodeScaledData.iy());
+            g.drawString("("+loc+")", currNodeScaledData.ix() +25, currNodeScaledData.iy()+20);
             // Draw all edges came out of the node:
             if (this.g1.getE(n.getKey()) != null) {
                 for (edge_data e : this.g1.getE(n.getKey())) //return a pointer (shallow copy) for the collection representing all the edges getting out of the given node
                 {
+                    Point3D destNodeScaledData = ScaleToFrame(this.g1.getNode(e.getDest()).getLocation(),minP,maxp);
+
                     double xSrc = currNodeScaledData.x();
                     double ySrc = currNodeScaledData.y();
-
-                    Point3D destNodeScaledData = ScaleToFrame(this.g1.getNode(e.getDest()).getLocation(),minP,maxP);
-
                     double xDest = destNodeScaledData.x();
                     double yDest = destNodeScaledData.y();
 
                     g.setColor(Color.BLUE);
                     g.drawLine((int) xSrc, (int) ySrc, (int) xDest, (int) yDest);
-                    //  StdDraw.line(xSrc, ySrc, xDest, yDest); //line fron n (xy) to e.dest(xy)
                     g.setColor(Color.BLACK);
                     //draws the weight of each edge
                     double xMid = (xSrc + xDest) / 2;
                     double yMid = (ySrc + yDest) / 2;
+                    g.setFont(new Font("deafult", Font.BOLD, 20));
                     g.drawString("" + e.getWeight(), (int) xMid, (int) yMid);
                     //draws a yellow point to indicate the direction of the edge
                     g.setColor(Color.YELLOW);
                     double xPoint = 0;
                     double yPoint = 0;
-                    if (xSrc < xDest) {
-                        xPoint = xSrc +  (xDest * (300/100));
-                    } else {
-                        xPoint = xSrc -  (xDest * (300/100));
+                    if (xSrc < xDest && ySrc < yDest)
+                    {
+                        xPoint = xSrc + (Math.abs(xSrc-xDest)*0.8);
+                        yPoint = ySrc + (Math.abs(ySrc-yDest)*0.8);
                     }
-                    if (ySrc < yDest) {
-                        yPoint = ySrc + (yDest * (300/100));
-                    } else {
-                        yPoint = ySrc -  (yDest * (300/100));
+                    else if (ySrc > yDest && xSrc > xDest)
+                    {
+                        xPoint = xSrc - (Math.abs(xSrc-xDest)*0.8);
+                        yPoint = ySrc - (Math.abs(ySrc-yDest)*0.8);
                     }
-
-                    g.fillOval((int) xPoint, (int) yPoint, 10, 10);
+                    else if (ySrc > yDest && xSrc < xDest)
+                    {
+                        xPoint = xSrc + (Math.abs(xSrc-xDest)*0.8);
+                        yPoint = ySrc - (Math.abs(ySrc-yDest)*0.85);
+                    }
+                    else if (ySrc < yDest && xSrc > xDest)
+                    {
+                        xPoint = xSrc - (Math.abs(xSrc-xDest)*0.95);
+                        yPoint = ySrc + (Math.abs(ySrc-yDest)*0.8);
+                    }
+                    g.fillOval((int) xPoint, (int) yPoint, 30, 30);
                 }
             }
         }
     }
-
+//works
     private Point3D minPoint(){
         if (this.g1.getV() == null) {
             return null;
@@ -146,7 +181,7 @@ public class Graph_GUI  extends JFrame implements ActionListener, MouseListener,
         }
         return new Point3D(min_x,min_y);
     }
-
+//works
     private Point3D maxPoint(){
         if (this.g1.getV() == null) {
             return null;
@@ -163,13 +198,13 @@ public class Graph_GUI  extends JFrame implements ActionListener, MouseListener,
         }
         return new Point3D(max_x,max_y);
     }
+    //works
     private Point3D ScaleToFrame(Point3D location,Point3D minPoint,Point3D maxPoint)
     {
         double r_min_x = minPoint.x();
         double r_max_x = maxPoint.x();
         double r_min_y = minPoint.y();
         double r_max_y = maxPoint.y();
-
 
         double t_min_x = 100;
         double t_max_x = this.getWidth()-100;
@@ -184,26 +219,27 @@ public class Graph_GUI  extends JFrame implements ActionListener, MouseListener,
 
         return new Point3D(res_x,res_y);
     }
-    //*****check after we make algo****
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        String str = e.getActionCommand();
-        if (str.equals("Save")) save("file1");
-        else if(str.equals("Load")) init("file1");
-        else  if (str.equals("init")) init(g1);
-        else if (str.equals("isConnected")) isConnected();
-
-    }
+    //??
     @Override
     public void mouseClicked(MouseEvent e) {
-
+       /* String keyS = JOptionPane.showInputDialog(this, "Please insert node key");
+        int x = e.getX();
+        int y = e.getY();
+        Point3D p = new Point3D(x, y);
+        try {
+            int key = Integer.parseInt(keyS);
+            node_data newNode = new NodeData(key);
+            newNode.setLocation(p);
+            g1.addNode(newNode);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "ERROR: " + ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+        }*/
     }
-
     @Override
     public void mousePressed(MouseEvent e) {
 
-    }
+}
 
     @Override
     public void mouseReleased(MouseEvent e) {
@@ -220,66 +256,78 @@ public class Graph_GUI  extends JFrame implements ActionListener, MouseListener,
 
     }
 
-    @Override
-    public void init(graph g)
+    public void init()
     {
 
     }
 
-    @Override
     public graph copy() {
         return null;
     }
-
-    @Override
-    public void init(String file_name)
-    {
+// init from a file
+    //need to check
+// noe working -problem in: graph ga = (graph) in.readObject(); in Graph_Algo
+    public void Load()  {
+        JFileChooser chooser = new JFileChooser();
         Graph_Algo g = new Graph_Algo();
-        JFileChooser chooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-        if(chooser.showOpenDialog(null)==JFileChooser.APPROVE_OPTION)
+        int returnFile = chooser.showOpenDialog(this);
+        if(returnFile == JFileChooser.APPROVE_OPTION)
         {
             try
             {
-                File SelectedFile=chooser.getSelectedFile();
+                File SelectedFile = chooser.getSelectedFile();
                 g.init(SelectedFile.getAbsolutePath());
-               g1 = g.copy();
+                this.g1 = g.copy();
                 repaint();
-
             }
             catch(Exception ex)
             {
                 ex.printStackTrace();
             }
         }
+    }
+// check save and then init from file and see if works
+    public void save()
+    {
+        JFileChooser fileChooser = new JFileChooser();
+        graph_algorithms ga = new Graph_Algo();
+        ga.init(this.g1);
+        JFileChooser Choose = new JFileChooser();
+        Choose.setDialogTitle("Save a file");
+        int userSelection = Choose.showSaveDialog(this);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File Save = Choose.getSelectedFile();
+            String FileName= Save.getAbsolutePath();
+            ga.save(FileName);
+            System.out.println("Save as file: " + Save.getAbsolutePath());
+        }
 
     }
-
-    @Override
-    public void save(String file_name)
-    {
-            graph_algorithms ga = new Graph_Algo();
-            JFileChooser fileChooser = new JFileChooser();
-            int returnV = fileChooser.showSaveDialog(fileChooser);
-            if (returnV == JFileChooser.APPROVE_OPTION)
+       /* int returnFile = fileChooser.showSaveDialog(fileChooser);
+        if (returnFile == JFileChooser.APPROVE_OPTION)
             {
-                File file = fileChooser.getSelectedFile();
-                if (file == null) {
-                    return;
-                }
-                if (!file.getName().toLowerCase().endsWith(".txt"))
-                {
-                    file = new File(file.getParentFile(), file.getName() + ".txt");
-                }
-                try {
-                    ga.save(fileChooser.getSelectedFile() + ".txt");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+            File file = fileChooser.getSelectedFile();
+            if (file == null)
+            {
+                return;
+            }
+            if (!file.getName().toLowerCase().endsWith(".txt")) {
+                file = new File(file.getParentFile(), file.getName() + ".txt");
+            }
+            try
+            {
+                ga.save(fileChooser.getSelectedFile() + ".txt");
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
             }
             fileChooser.setVisible(true);
+           }
     }
-
-    @Override
+*/
+ // works
     public boolean isConnected()
     {
         graph_algorithms graphAlgo = new Graph_Algo();
@@ -288,7 +336,6 @@ public class Graph_GUI  extends JFrame implements ActionListener, MouseListener,
         if(ans)
         {
             JOptionPane.showMessageDialog(null,"The graph is connected", "isConnected", JOptionPane.QUESTION_MESSAGE);
-
         }
         else
         {
@@ -296,19 +343,87 @@ public class Graph_GUI  extends JFrame implements ActionListener, MouseListener,
         }
         return ans;
     }
-
-    @Override
-    public double shortestPathDist(int src, int dest) {
-        return 0;
+// works
+    public void shortestPathDist()
+    {
+        graph_algorithms graphAlgo = new Graph_Algo();
+        graphAlgo.init(g1);
+        String srcNode = JOptionPane.showInputDialog(this, "insert source node");
+        String destNode = JOptionPane.showInputDialog(this, "insert destination node");
+        try {
+            int src = Integer.parseInt(srcNode);
+            int dest = Integer.parseInt(destNode);
+            double distPath = graphAlgo.shortestPathDist(src, dest);
+            if (distPath == Double.MAX_VALUE) {
+                JOptionPane.showMessageDialog(this, "There isn't a shortest path distance", "Message", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "The shortest path distance is: " + distPath, "Message", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "ERROR: " + ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
     }
+//works
+    public void shortestPathList()
+    {
+        graph_algorithms graphAlgo = new Graph_Algo();
+        graphAlgo.init(g1);
+        String srcTemp = JOptionPane.showInputDialog(this, "insert source node");
+        String destTemp = JOptionPane.showInputDialog(this,"insert destination node");
+        List <node_data> nodeList;
+        try
+        {
+            int src = Integer.parseInt(srcTemp);
+            int dst = Integer.parseInt(destTemp);
+            nodeList = graphAlgo.shortestPath(src,dst);
+            String result = "";
+            if(nodeList != null)
+            {
+                for(int i = 0; i < nodeList.size()-1; i++)
+                    result += nodeList.get(i)+" >>> ";
+                result += nodeList.get(nodeList.size()-1);
+            }
+            else
+            {
+                result = "There are no path between the tow given nodes";
+            }
+            JOptionPane.showMessageDialog(this, "The shortest path is: \n " + result, "Message", JOptionPane.INFORMATION_MESSAGE);
+        }
+        catch (Exception ex)
+        {
+            JOptionPane.showMessageDialog(this, "ERROR: something went wrong " + ex.getMessage(), "Message", JOptionPane.ERROR_MESSAGE);
+        }
 
-    @Override
-    public List<node_data> shortestPath(int src, int dest) {
-        return null;
     }
-
-    @Override
-    public List<node_data> TSP(List<Integer> targets) {
-        return null;
-    }
+//works
+    public void TSP()
+    {
+            graph_algorithms graphAlgo = new Graph_Algo();
+            graphAlgo.init(g1);
+            String nodesPath = JOptionPane.showInputDialog(this, "enter the amount of target nodes");
+            List<Integer> targetsNode = new LinkedList<Integer>();
+            List<node_data> tempAns;
+            try {
+                int amount = Integer.parseInt(nodesPath);
+                for (int i = 0; i < amount; i++) {
+                    String targetString = JOptionPane.showInputDialog(this, "Please insert target node: " + " -- " + i);
+                    int target = Integer.parseInt(targetString);
+                    targetsNode.add(target);
+                }
+                Graph_Algo newTspNode = new Graph_Algo();
+                newTspNode.init(g1);
+                tempAns = newTspNode.TSP(targetsNode);
+                String result = "";
+                if (tempAns != null) {
+                    for (int i = 0; i < tempAns.size() - 1; i++)
+                        result += tempAns.get(i) + " >> ";
+                        result += tempAns.get(tempAns.size() - 1);
+                } else {
+                    result = "there are no path between this given targets";
+                }
+                JOptionPane.showMessageDialog(this, "The shortest path is:\n " + result, "Message", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "ERROR: " + ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
+        }
 }

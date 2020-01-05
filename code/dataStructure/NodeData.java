@@ -19,6 +19,14 @@ public class NodeData implements node_data {
         this.info = null;
         this.tag = 0;
     }
+    public NodeData (int key)
+    {
+        this.key = key;
+        this.location = Point3D.ORIGIN;
+        this.nWeight = Integer.MAX_VALUE;
+        this.info = null;
+        this.tag = 0;
+    }
     public NodeData (NodeData n)
     {
         this.key = n.key;

@@ -38,12 +38,14 @@ public class Graph_Algo implements graph_algorithms {
 			FileInputStream file = new FileInputStream(file_name);
 			ObjectInputStream in = new ObjectInputStream(file);
 
-			this.graph_algo = (graph) in.readObject();
+			graph ga = (graph) in.readObject();
+			graph_algo = ga;
+
+		//	this.graph_algo = (graph) in.readObject();
+			System.out.println("Object has been deserialized");
 
 			in.close();
 			file.close();
-
-			System.out.println("Object has been deserialized");
 
 		} catch (IOException ex) {
 			System.out.println("IOException is caught");
@@ -95,6 +97,7 @@ public class Graph_Algo implements graph_algorithms {
 		for (node_data n : this.graph_algo.getV()) {
 			n.setTag(0);
 			n.setWeight(Integer.MAX_VALUE);
+			n.setInfo("");
 		}
 	}
 

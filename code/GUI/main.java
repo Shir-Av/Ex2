@@ -32,7 +32,7 @@ public class main {
         //  gui.initGraph();
         //  gui.Paint(g);
 
-       /* graph g = new DGraph();
+      /*  graph g = new DGraph();
         NodeData n1 = new NodeData(1, new Point3D(3,6, 0));
         g.addNode(n1);
         g.addNode(new NodeData(2, new Point3D(1000, 1000)));
@@ -55,16 +55,16 @@ public class main {
             }
         }
         Graph_GUI app = new Graph_GUI(g);
-      //  app.setVisible(true);*/
+        app.setVisible(true);*/
 
         graph g1 = new DGraph();
         graph_algorithms ga1 = new Graph_Algo();
 
-        g1.addNode(new NodeData(0, new Point3D(-50, 165)));
-        g1.addNode(new NodeData(1, new Point3D(2, 400)));
-        g1.addNode(new NodeData(2, new Point3D(144, -1000)));
-        g1.addNode(new NodeData(3, new Point3D(-100, 24)));
-        g1.addNode(new NodeData(4, new Point3D(200, -85)));
+        g1.addNode(new NodeData(0, new Point3D(-10, 4)));
+        g1.addNode(new NodeData(1, new Point3D(-5, 10)));
+        g1.addNode(new NodeData(2, new Point3D(10, 10)));
+        g1.addNode(new NodeData(3, new Point3D(9, -1)));
+        g1.addNode(new NodeData(4, new Point3D(-4, 0)));
         g1.connect(0, 1, 10);
         g1.connect(0, 4, 5);
         g1.connect(1, 4, 2);
@@ -77,6 +77,6 @@ public class main {
         g1.connect(4, 3, 2);
 
         Graph_GUI gg = new Graph_GUI(g1);
-
+        System.out.println(gg);
     }
 }
