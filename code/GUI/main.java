@@ -77,5 +77,6 @@ public class main {
         g1.connect(4, 3, 2);
 
         Graph_GUI gg = new Graph_GUI(g1);
+
     }
 }

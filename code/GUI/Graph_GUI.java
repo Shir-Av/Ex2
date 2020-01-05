@@ -74,9 +74,11 @@ public class Graph_GUI  extends JFrame implements ActionListener, MouseListener,
 
     public void Draw(Graphics g) {
          Graphics2D g1 = (Graphics2D) g;
+         Point3D minP = minPoint();
+         Point3D maxP = maxPoint();
         for (node_data n : this.g1.getV()) // This method return a pointer (shallow copy) for the  collection representing all the nodes in the graph
         {
-            Point3D currNodeScaledData = ScaleToFrame(n.getLocation());
+            Point3D currNodeScaledData = ScaleToFrame(n.getLocation(),minP,maxP);
 
             g.setColor(Color.RED);
             g.fillOval(currNodeScaledData.ix(), currNodeScaledData.iy(), 20, 20); //draw a point in the x,y location
@@ -94,7 +96,7 @@ public class Graph_GUI  extends JFrame implements ActionListener, MouseListener,
                     double xSrc = currNodeScaledData.x();
                     double ySrc = currNodeScaledData.y();
 
-                    Point3D destNodeScaledData = ScaleToFrame(this.g1.getNode(e.getDest()).getLocation());
+                    Point3D destNodeScaledData = ScaleToFrame(this.g1.getNode(e.getDest()).getLocation(),minP,maxP);
 
                     double xDest = destNodeScaledData.x();
                     double yDest = destNodeScaledData.y();
@@ -128,13 +130,45 @@ public class Graph_GUI  extends JFrame implements ActionListener, MouseListener,
         }
     }
 
+    private Point3D minPoint(){
+        if (this.g1.getV() == null) {
+            return null;
+        }
+        double min_x = this.g1.getV().iterator().next().getLocation().x();
+        double min_y = this.g1.getV().iterator().next().getLocation().y();
+        for (node_data n : this.g1.getV()){
+            if (n.getLocation().x() < min_x){
+                min_x = n.getLocation().x();
+            }
+            if(n.getLocation().y() < min_y){
+                min_y = n.getLocation().y();
+            }
+        }
+        return new Point3D(min_x,min_y);
+    }
 
-    private Point3D ScaleToFrame(Point3D location)
+    private Point3D maxPoint(){
+        if (this.g1.getV() == null) {
+            return null;
+        }
+        double max_x = this.g1.getV().iterator().next().getLocation().x();
+        double max_y = this.g1.getV().iterator().next().getLocation().y();
+        for (node_data n : this.g1.getV()){
+            if (n.getLocation().x() > max_x){
+                max_x = n.getLocation().x();
+            }
+            if(n.getLocation().y() > max_y){
+                max_y = n.getLocation().y();
+            }
+        }
+        return new Point3D(max_x,max_y);
+    }
+    private Point3D ScaleToFrame(Point3D location,Point3D minPoint,Point3D maxPoint)
     {
-        double r_min_x = 100;
-        double r_max_x = 200;
-        double r_min_y = -1000;
-        double r_max_y = 400;
+        double r_min_x = minPoint.x();
+        double r_max_x = maxPoint.x();
+        double r_min_y = minPoint.y();
+        double r_max_y = maxPoint.y();
 
 
         double t_min_x = 100;
